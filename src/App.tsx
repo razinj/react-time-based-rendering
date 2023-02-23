@@ -1,7 +1,8 @@
 // React
 import { ChangeEvent, useState } from 'react'
 // Components
-import TimeBasedWrapper from './components/v1/TimeBasedWrapper'
+import TimeBasedWrapper_V1 from './components/v1/TimeBasedWrapper'
+import TimeBasedWrapper_V2 from './components/v2/TimeBasedWrapper'
 import ComponentToRender from './components/ComponentToRender'
 // Utils
 import { getCurrentDateFromTime } from './utils/date'
@@ -34,9 +35,15 @@ const App = () => {
         </div>
       </div>
       {startDate && endDate && (
-        <TimeBasedWrapper startDate={startDate} endDate={endDate}>
-          <ComponentToRender version='v1' />
-        </TimeBasedWrapper>
+        <>
+          <TimeBasedWrapper_V1 startDate={startDate} endDate={endDate}>
+            <ComponentToRender version='v1 contains normal implementation' />
+          </TimeBasedWrapper_V1>
+          <br />
+          <TimeBasedWrapper_V2 startDate={startDate} endDate={endDate}>
+            <ComponentToRender version='v2  contains implementation as a custom hook' />
+          </TimeBasedWrapper_V2>
+        </>
       )}
     </div>
   )

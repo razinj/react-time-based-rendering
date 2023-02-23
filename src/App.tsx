@@ -22,7 +22,7 @@ const App = () => {
 
   return (
     <div className='app-wrapper'>
-      <p>Time-Based Component Rendering, choose your timing!</p>
+      <p>Time-Based Component Rendering, choose your timing to render!</p>
       <div className='time-pickers-wrapper'>
         <div>
           <label htmlFor='start_time'>Start</label>
@@ -33,7 +33,6 @@ const App = () => {
           <input id='end_time' type='time' onChange={setEndDateFromTime}></input>
         </div>
       </div>
-      {(!startDate || !endDate) && <p>Not the time to display anything!</p>}
       {startDate && endDate && (
         <TimeBasedWrapper startDate={startDate} endDate={endDate}>
           <ComponentToRender version='v1' />

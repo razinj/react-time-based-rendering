@@ -2,6 +2,8 @@
 
 This project includes an implementation for time-based rendering in React, `v1` folder contains a normal implementation while `v2` is the same implementation as a custom hook (fancy implementation).
 
+Netlify demo: [https://react-time-based-rendering.netlify.app](https://react-time-based-rendering.netlify.app)
+
 ## Run
 
 - `npm start`

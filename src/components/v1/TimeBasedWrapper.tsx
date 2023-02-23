@@ -32,8 +32,8 @@ const TimeBasedWrapper = ({ startDate, endDate, children }: Props) => {
     }
 
     return () => {
-      if (startRenderingTimeOut) clearTimeout(startRenderingTimeOut)
-      if (stopRenderingTimeOut) clearTimeout(stopRenderingTimeOut)
+      clearTimeout(startRenderingTimeOut)
+      clearTimeout(stopRenderingTimeOut)
     }
   }, [startDate, endDate])
 

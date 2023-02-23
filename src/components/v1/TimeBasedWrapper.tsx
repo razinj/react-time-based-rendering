@@ -1,59 +1,43 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { TimeBasedRenderingProps as Props } from '../models/props'
 
-const startDate = new Date('2023-02-22T22:32:00Z')
-const endDate = new Date('2023-02-22T22:40:00Z')
-
-const TimeBasedWrapper = ({ children }: { children: ReactNode }) => {
-  const [canDisplay, setCanDisplay] = useState(true)
-  const [checkAgain, setCheckAgain] = useState(false)
-  const [checkAgainAt, setCheckAgainAt] = useState<Date>(startDate)
+const TimeBasedWrapper = ({ startDate, endDate, children }: Props) => {
+  const [canRender, setCanRender] = useState(false)
 
   useEffect(() => {
-    console.log('Whether or not to check again!')
-    const nowTime = new Date().getTime()
-    const timeoutTime = checkAgainAt.getTime() - nowTime
+    const currentDate = new Date()
+    let startRenderingTimeOut: NodeJS.Timeout | undefined = undefined
+    let stopRenderingTimeOut: NodeJS.Timeout | undefined = undefined
 
-    if (timeoutTime < 0) {
-      console.log('Will not check again, we should start, timeout time found: ', timeoutTime)
-      return
+    const shouldRenderNow = currentDate.getTime() >= startDate.getTime() && currentDate.getTime() <= endDate.getTime()
+
+    if (shouldRenderNow) {
+      // Start rendering
+      setCanRender(true)
+
+      // Set timeout to stop rendering at end date
+      const isCurrentDateAheadOfStartDate = currentDate.getTime() > startDate.getTime()
+      const renderingStartDate = isCurrentDateAheadOfStartDate ? currentDate.getTime() : startDate.getTime()
+      const timeToStopRendering = endDate.getTime() - renderingStartDate
+      stopRenderingTimeOut = setTimeout(() => setCanRender(false), timeToStopRendering)
+    } else {
+      // Stop rendering
+      setCanRender(false)
+
+      // Set timeouts to start rendering at start date and end rendering at end date
+      const timeToStartRendering = startDate.getTime() - currentDate.getTime()
+      const timeToStopRendering = endDate.getTime() - currentDate.getTime()
+      startRenderingTimeOut = setTimeout(() => setCanRender(true), timeToStartRendering)
+      stopRenderingTimeOut = setTimeout(() => setCanRender(false), timeToStopRendering)
     }
-
-    console.log('Should check again in: ', timeoutTime)
-    const timeout = setTimeout(() => setCheckAgain(true), timeoutTime)
 
     return () => {
-      console.log('Clearing checkAgain timeout')
-      clearTimeout(timeout)
+      if (startRenderingTimeOut) clearTimeout(startRenderingTimeOut)
+      if (stopRenderingTimeOut) clearTimeout(stopRenderingTimeOut)
     }
-  }, [checkAgainAt])
+  }, [startDate, endDate])
 
-  useEffect(() => {
-    console.log('Whether or not to start displaying!')
-    const nowTime = new Date().getTime()
-    const shouldStartNow = nowTime >= startDate.getTime() && nowTime <= endDate.getTime()
-
-    if (!shouldStartNow) {
-      console.log('Not starting now.')
-      setCanDisplay(false)
-      setCheckAgainAt(startDate)
-      return
-    }
-
-    setCanDisplay(true)
-
-    const isNowAheadOfStartDate = nowTime >= startDate.getTime()
-    const timeoutTime = endDate.getTime() - (isNowAheadOfStartDate ? nowTime : startDate.getTime())
-
-    console.log('Displaying until: ', timeoutTime)
-    const timeout = setTimeout(() => setCanDisplay(false), timeoutTime)
-
-    return () => {
-      console.log('Clearing canDisplay timeout')
-      clearTimeout(timeout)
-    }
-  }, [checkAgain])
-
-  return <div>{canDisplay && children}</div>
+  return <div>{canRender && children}</div>
 }
 
 export default TimeBasedWrapper

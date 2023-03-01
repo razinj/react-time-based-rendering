@@ -36,7 +36,7 @@ const App = () => {
       </div>
       {startDate && endDate && (
         <>
-          <TimeBasedWrapperV1 startDate={startDate} endDate={endDate}>
+          <TimeBasedWrapperV1 incomingStartDate={startDate} incomingEndDate={endDate}>
             <ComponentToRender version='v1 contains normal implementation' />
           </TimeBasedWrapperV1>
           <br />

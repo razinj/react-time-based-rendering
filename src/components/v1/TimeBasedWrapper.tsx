@@ -1,15 +1,18 @@
 // React
 import { useEffect, useState } from 'react'
 // Models
-import { TimeBasedRenderingProps as Props } from '../models/props'
+import { TimeBasedRenderingV1Props as Props } from '../models/props'
 
-const TimeBasedWrapper = ({ startDate, endDate, children }: Props) => {
+const TimeBasedWrapper = ({ incomingStartDate, incomingEndDate, children }: Props) => {
+  const [startDate, setStartDate] = useState(incomingStartDate)
+  const [endDate, setEndDate] = useState(incomingEndDate)
   const [canRender, setCanRender] = useState(false)
 
   useEffect(() => {
     const currentDate = new Date()
     let startRenderingTimeOut: NodeJS.Timeout | undefined = undefined
     let stopRenderingTimeOut: NodeJS.Timeout | undefined = undefined
+    let nextDayUpdateTimeOut: NodeJS.Timeout | undefined = undefined
 
     const shouldRenderNow = currentDate.getTime() >= startDate.getTime() && currentDate.getTime() <= endDate.getTime()
 
@@ -33,9 +36,18 @@ const TimeBasedWrapper = ({ startDate, endDate, children }: Props) => {
       stopRenderingTimeOut = setTimeout(() => setCanRender(false), timeToStopRendering)
     }
 
+    // Update the date (day) of the start and end dates so it would run everyday
+    // Basically we have a timeout to launch after midnight by one second to update the day of the start and end dates
+    const timeUntilMidnight = new Date(new Date().setHours(0, 0, 0, 0)).getTime() - new Date().getTime() + 1000
+    nextDayUpdateTimeOut = setTimeout(() => {
+      setStartDate(new Date(startDate.setDate(startDate.getDate() + 1)))
+      setEndDate(new Date(endDate.setDate(endDate.getDate() + 1)))
+    }, timeUntilMidnight)
+
     return () => {
       clearTimeout(startRenderingTimeOut)
       clearTimeout(stopRenderingTimeOut)
+      clearTimeout(nextDayUpdateTimeOut)
     }
   }, [startDate, endDate])
 

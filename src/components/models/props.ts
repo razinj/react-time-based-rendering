@@ -6,3 +6,9 @@ export type TimeBasedRenderingProps = {
   startDate: Date
   endDate: Date
 }
+
+export type TimeBasedRenderingV1Props = {
+  children: ReactNode
+  incomingStartDate: Date
+  incomingEndDate: Date
+}
